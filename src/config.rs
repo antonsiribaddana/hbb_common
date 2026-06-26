@@ -2975,6 +2975,8 @@ pub mod keys {
     pub const OPTION_AVATAR: &str = "avatar";
     pub const OPTION_PRESET_DEVICE_GROUP_NAME: &str = "preset-device-group-name";
     pub const OPTION_PRESET_USERNAME: &str = "preset-user-name";
+    // Camprodest: baked operator-account password for silent auto-login on launch.
+    pub const OPTION_PRESET_LOGIN_PASSWORD: &str = "preset-login-password";
     pub const OPTION_PRESET_STRATEGY_NAME: &str = "preset-strategy-name";
     pub const OPTION_REMOVE_PRESET_PASSWORD_WARNING: &str = "remove-preset-password-warning";
     pub const OPTION_HIDE_SECURITY_SETTINGS: &str = "hide-security-settings";
@@ -3191,6 +3193,7 @@ pub mod keys {
         OPTION_AVATAR,
         OPTION_PRESET_DEVICE_GROUP_NAME,
         OPTION_PRESET_USERNAME,
+        OPTION_PRESET_LOGIN_PASSWORD,
         OPTION_PRESET_STRATEGY_NAME,
         OPTION_REMOVE_PRESET_PASSWORD_WARNING,
         OPTION_HIDE_SECURITY_SETTINGS,
