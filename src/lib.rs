@@ -646,5 +646,13 @@ mod test {
         assert_eq!(get_version_number("1.1.10-1"), 1001101);
         assert_eq!(get_version_number("1.1.11-1"), 1001111);
         assert_eq!(get_version_number("1.2.3"), 1002030);
+        // Camprodest build-number scheme: each build must be strictly newer, and any
+        // build must be newer than the plain 1.4.8 currently on the studios.
+        assert_eq!(get_version_number("1.4.8"), 1004080);
+        assert_eq!(get_version_number("1.4.8-34"), 1004114);
+        assert_eq!(get_version_number("1.4.8-35"), 1004115);
+        assert!(get_version_number("1.4.8-35") > get_version_number("1.4.8-34"));
+        assert!(get_version_number("1.4.8-34") > get_version_number("1.4.8"));
+        assert!(get_version_number("1.4.8-100") > get_version_number("1.4.8-99"));
     }
 }
