@@ -227,15 +227,30 @@ pub fn get_version_from_url(url: &str) -> String {
 
 pub fn gen_version() {
     println!("cargo:rerun-if-changed=Cargo.toml");
+    // Camprodest: CI sets CAMPRODEST_VERSION = "1.4.8-<build#>" so every build gets a
+    // strictly-newer crate::VERSION, which the silent auto-updater compares to decide
+    // when to pull the next build. Local builds fall back to the Cargo.toml version.
+    println!("cargo:rerun-if-env-changed=CAMPRODEST_VERSION");
     use std::io::prelude::*;
     let mut file = File::create("./src/version.rs").unwrap();
-    for line in read_lines("Cargo.toml").unwrap().flatten() {
-        let ab: Vec<&str> = line.split('=').map(|x| x.trim()).collect();
-        if ab.len() == 2 && ab[0] == "version" {
-            file.write_all(format!("pub const VERSION: &str = {};\n", ab[1]).as_bytes())
-                .ok();
-            break;
+    let mut version = String::new();
+    if let Ok(v) = std::env::var("CAMPRODEST_VERSION") {
+        if !v.trim().is_empty() {
+            version = format!("\"{}\"", v.trim());
         }
+    }
+    if version.is_empty() {
+        for line in read_lines("Cargo.toml").unwrap().flatten() {
+            let ab: Vec<&str> = line.split('=').map(|x| x.trim()).collect();
+            if ab.len() == 2 && ab[0] == "version" {
+                version = ab[1].to_string();
+                break;
+            }
+        }
+    }
+    if !version.is_empty() {
+        file.write_all(format!("pub const VERSION: &str = {};\n", version).as_bytes())
+            .ok();
     }
     // generate build date
     let build_date = format!("{}", chrono::Local::now().format("%Y-%m-%d %H:%M"));
@@ -493,7 +508,9 @@ pub const VER_TYPE_RUSTDESK_CLIENT: &str = "rustdesk-client";
 pub const VER_TYPE_RUSTDESK_SERVER: &str = "rustdesk-server";
 
 pub fn version_check_request(typ: String) -> (VersionCheckRequest, String) {
-    const URL: &str = "https://api.rustdesk.com/version/latest";
+    // Camprodest: point the update check at our own endpoint so studios auto-update
+    // from our GitHub releases (antonsiribaddana/rustdesk) instead of upstream RustDesk.
+    const URL: &str = "https://connect.camprodest.com/version/latest";
 
     use sysinfo::System;
     let system = System::new();
